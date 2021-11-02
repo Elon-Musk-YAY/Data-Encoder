@@ -160,7 +160,7 @@ class Menu(GridLayout):
         self.cols = 1
         self.loading_win = FloatLayout()
         self.splash_label = Label(text="Data Encoder", font_size=80, color=[218 / 255, 238 / 255, 0, 0.8])
-        self.splash_version = Label(text=version, font_size=40, color=[0, 1, 0, 1], pos=(0, -100))
+        self.splash_version = Label(text="2021.1.6", font_size=40, color=[0, 1, 0, 1], pos=(0, -100))
         self.loading_win.add_widget(self.splash_label)
         self.loading_win.add_widget(self.splash_version)
         self.bar = ProgressBar(max=1000, size_hint_x=None, width=1400, pos=(200, -400))
