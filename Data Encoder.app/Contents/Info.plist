@@ -29,7 +29,7 @@
 	<key>NSAppleScriptEnabled</key>
 	<false/>
 	<key>NSHumanReadableCopyright</key>
-	<string>2021 Akshar Desai Programs©</string>
+	<string>© 2021 Akshar Desai Programs</string>
 	<key>NSMainNibFile</key>
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>
