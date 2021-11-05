@@ -1,6 +1,5 @@
 import base64
 import sys
-import os
 from kivy.uix.button import Button
 from kivy.app import App
 from kivy.uix.screenmanager import Screen, ScreenManager
@@ -17,11 +16,24 @@ from kivy.core.window import Window
 from kivy.clock import Clock
 from kivy.uix.progressbar import ProgressBar
 from version import version
-from kivy.uix.filechooser import FileChooserListView, FileChooserIconView
+import wx
 Config.set('kivy', 'exit_on_escape', '0')
 Config.set('kivy', 'log_enable', '0')
 
 
+app = wx.App()
+frame = wx.Frame(None, -1, 'win.py')
+frame.SetSize(0, 0, 500, 900)
+frame.SetBackgroundColour('black')
+frame.Hide()
+
+openFileDialog = wx.FileDialog(frame, "Open A File To Set It's Contents As The Input...", "", "",
+                               "",
+                               wx.FD_OPEN | wx.FD_FILE_MUST_EXIST)
+
+saveFileDialog = wx.FileDialog(frame, "Save Output As..", "txt files(*.txt)|*.*", "",
+                               "",
+                               wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT)
 
 class TitleLabel(Label): 
     def on_size(self, *args):
@@ -60,27 +72,26 @@ class encodeb64(GridLayout):
         self.copy_button = Button(text="Copy Output To Clipboard")
         self.copy_button.bind(on_press=self.copy)
         self.secondary.add_widget(self.copy_button)
+        self.open_from_file = Button(text="Get input from file", on_press=self.file_picker)
+        self.secondary.add_widget(self.open_from_file)
+        self.save_to_file = Button(text="Save Output To File",on_press=lambda x: self.save_to_file_def())
+        self.secondary.add_widget(self.save_to_file)
         self.back_button = Button(text='Back',color=[255/255, 143/255, 0, 1],background_color=[0,0,1,1])
         self.back_button.bind(on_press=self.back)
         self.secondary.add_widget(self.back_button)
-        self.file_chooser = FileChooserListView(rootpath="/Users/")
-        self.ok_button = Button(text="Open File", on_release=lambda x: self.open(self.file_chooser.path, self.file_chooser.selection))
-        self.open_from_file = Button(text="Import text from file",on_release=self.file_picker)
-
-        self.secondary.add_widget(self.open_from_file)
+        self.ok_button = Button(text="Open File",
+                                on_press=lambda x: self.open(openFileDialog.GetPath()),background_color=[1,122/255,0,1],color=[0,1,0,1])
         self.add_widget(self.secondary)
+
+
 
     def callback(self, instance):
         self.new = base64.b64encode(self.original.text.encode("utf-8"))
         self.out.text= self.new.decode("utf-8")
-    def open(self, path, filename):
+    def open(self,filename):
         try:
-            with open(os.path.join(path, filename[0])) as f:
+            with open(filename) as f:
                 self.original.text = f.read()
-            self.clear_widgets()
-            self.cols = 1
-            self.add_widget(self.screen_title)
-            self.add_widget(self.secondary)
         except:
             pass
     def back(self, instance):
@@ -91,11 +102,24 @@ class encodeb64(GridLayout):
         self.original.text = ""
 
     def file_picker(self, instance):
-        self.clear_widgets()
-        self.cols = 0
-        self.rows= 2
-        self.add_widget(self.file_chooser)
-        self.add_widget(self.ok_button)
+        openFileDialog.ShowModal()
+        self.open(openFileDialog.GetPath())
+        openFileDialog.Destroy()
+        Window.raise_window()
+    def save_to_file_def(self):
+        saveFileDialog.SetFilename(f"{openFileDialog.GetFilename()[:-3]} Encoded.txt")
+        saveFileDialog.ShowModal()
+        self.write_to_file(saveFileDialog.GetPath())
+        saveFileDialog.Destroy()
+        Window.raise_window()
+    def write_to_file(self, filename):
+        try:
+            with open(filename, 'w') as f:
+                f.write(self.out.text)
+                f.close()
+        except:
+            pass
+
 
 
 
@@ -128,15 +152,15 @@ class decodeb64(GridLayout):
         self.copy_button = Button(text="Copy Output To Clipboard")
         self.copy_button.bind(on_press=self.copy)
         self.secondary.add_widget(self.copy_button)
+        self.open_from_file = Button(text="Get input from file", on_press=self.file_picker)
+        self.secondary.add_widget(self.open_from_file)
+        self.save_to_file = Button(text="Save Output To File",on_press=lambda x: self.save_to_file_def())
+        self.secondary.add_widget(self.save_to_file)
         self.back_button = Button(text='Back',color=[255/255, 143/255, 0, 1],background_color=[0,0,1,1])
         self.back_button.bind(on_press=self.back)
         self.secondary.add_widget(self.back_button)
-        self.file_chooser = FileChooserListView(rootpath="/Users/")
         self.ok_button = Button(text="Open File",
-                                on_release=lambda x: self.open(self.file_chooser.path, self.file_chooser.selection))
-        self.open_from_file = Button(text="Import text from file", on_release=self.file_picker)
-
-        self.secondary.add_widget(self.open_from_file)
+                                on_press=lambda x: self.open(openFileDialog.GetPath()),background_color=[1,122/255,0,1],color=[0,1,0,1])
         self.add_widget(self.secondary)
 
     def callback(self, instance):
@@ -167,22 +191,34 @@ class decodeb64(GridLayout):
     def close_popup(self, instance):
         self.popup.dismiss()
     def file_picker(self, instance):
-        self.clear_widgets()
-        self.cols = 0
-        self.rows= 2
-        self.add_widget(self.file_chooser)
-        self.add_widget(self.ok_button)
+        openFileDialog.ShowModal()
+        self.open(openFileDialog.GetPath())
+        openFileDialog.Destroy()
+        Window.raise_window()
+
+
+
     def copy(self, instance):
         Clipboard.copy(self.out.text)
 
-    def open(self, path, filename):
+    def open(self, filename):
         try:
-            with open(os.path.join(path, filename[0])) as f:
+            with open(filename) as f:
                 self.original.text = f.read()
-            self.clear_widgets()
-            self.cols = 1
-            self.add_widget(self.screen_title)
-            self.add_widget(self.secondary)
+
+        except:
+            pass
+    def save_to_file_def(self):
+        saveFileDialog.SetFilename(f"{openFileDialog.GetFilename()[:-3]} Encoded.txt")
+        saveFileDialog.ShowModal()
+        self.write_to_file(saveFileDialog.GetPath())
+        saveFileDialog.Destroy()
+        Window.raise_window()
+    def write_to_file(self, filename):
+        try:
+            with open(filename, 'w') as f:
+                f.write(self.out.text)
+                f.close()
         except:
             pass
 
@@ -209,6 +245,7 @@ class Menu(GridLayout):
         self.loading_win.add_widget(self.bar)
         self.add_widget(self.loading_win)
         self.load_bar = Clock.schedule_interval(self.up, 0.1)
+        # self.show_menu()
 
 
     def go_to_binary(self, instance):
@@ -348,15 +385,15 @@ class encodebin(GridLayout):
         self.copy_button = Button(text="Copy Output To Clipboard")
         self.copy_button.bind(on_press=self.copy)
         self.secondary.add_widget(self.copy_button)
+        self.open_from_file = Button(text="Get input from file", on_press=self.file_picker)
+        self.secondary.add_widget(self.open_from_file)
+        self.save_to_file = Button(text="Save Output To File",on_press=lambda x: self.save_to_file_def())
+        self.secondary.add_widget(self.save_to_file)
         self.back_button = Button(text='Back',color=[255/255, 143/255, 0, 1],background_color=[0,0,1,1])
         self.back_button.bind(on_press=self.back)
         self.secondary.add_widget(self.back_button)
-        self.file_chooser = FileChooserListView(rootpath="/Users/")
         self.ok_button = Button(text="Open File",
-                                on_release=lambda x: self.open(self.file_chooser.path, self.file_chooser.selection))
-        self.open_from_file = Button(text="Import text from file", on_release=self.file_picker)
-
-        self.secondary.add_widget(self.open_from_file)
+                                on_press=lambda x: self.open(openFileDialog.GetPath()),background_color=[1,122/255,0,1],color=[0,1,0,1])
         self.add_widget(self.secondary)
 
     def callback(self, instance):
@@ -373,20 +410,31 @@ class encodebin(GridLayout):
         Clipboard.copy(self.out.text)
 
     def file_picker(self, instance):
-        self.clear_widgets()
-        self.cols = 0
-        self.rows = 2
-        self.add_widget(self.file_chooser)
-        self.add_widget(self.ok_button)
+        openFileDialog.ShowModal()
+        self.open(openFileDialog.GetPath())
+        openFileDialog.Destroy()
+        Window.raise_window()
 
-    def open(self, path, filename):
+
+
+    def open(self, filename):
         try:
-            with open(os.path.join(path, filename[0])) as f:
+            with open(filename) as f:
                 self.original.text = f.read()
-            self.clear_widgets()
-            self.cols = 1
-            self.add_widget(self.screen_title)
-            self.add_widget(self.secondary)
+
+        except:
+            pass
+    def save_to_file_def(self):
+        saveFileDialog.SetFilename(f"{openFileDialog.GetFilename()[:-3]} Encoded.txt")
+        saveFileDialog.ShowModal()
+        self.write_to_file(saveFileDialog.GetPath())
+        saveFileDialog.Destroy()
+        Window.raise_window()
+    def write_to_file(self, filename):
+        try:
+            with open(filename, 'w') as f:
+                f.write(self.out.text)
+                f.close()
         except:
             pass
 
@@ -415,14 +463,15 @@ class decodebin(GridLayout):
         self.copy_button = Button(text="Copy Output To Clipboard")
         self.copy_button.bind(on_press=self.copy)
         self.secondary.add_widget(self.copy_button)
+        self.open_from_file = Button(text="Get input from file", on_press=self.file_picker)
+        self.secondary.add_widget(self.open_from_file)
+        self.save_to_file = Button(text="Save Output To File",on_press=lambda x: self.save_to_file_def())
+        self.secondary.add_widget(self.save_to_file)
         self.back_button = Button(text='Back',color=[255/255, 143/255, 0, 1],background_color=[0,0,1,1])
         self.back_button.bind(on_press=self.back)
         self.secondary.add_widget(self.back_button)
-        self.file_chooser = FileChooserListView(rootpath="/Users/")
         self.ok_button = Button(text="Open File",
-                                on_release=lambda x: self.open(self.file_chooser.path, self.file_chooser.selection))
-        self.open_from_file = Button(text="Import text from file", on_release=self.file_picker)
-        self.secondary.add_widget(self.open_from_file)
+                                on_press=lambda x: self.open(openFileDialog.GetPath()),background_color=[1,122/255,0,1],color=[0,1,0,1])
         self.add_widget(self.secondary)
     def callback(self, instance):
         try:
@@ -457,20 +506,30 @@ class decodebin(GridLayout):
 
 
     def file_picker(self, instance):
-        self.clear_widgets()
-        self.cols = 0
-        self.rows = 2
-        self.add_widget(self.file_chooser)
-        self.add_widget(self.ok_button)
+        openFileDialog.ShowModal()
+        self.open(openFileDialog.GetPath())
+        openFileDialog.Destroy()
+        Window.raise_window()
 
-    def open(self, path, filename):
+
+    def open(self,filename):
         try:
-            with open(os.path.join(path, filename[0])) as f:
+            with open(filename) as f:
                 self.original.text = f.read()
-            self.clear_widgets()
-            self.cols = 1
-            self.add_widget(self.screen_title)
-            self.add_widget(self.secondary)
+
+        except:
+            pass
+    def save_to_file_def(self):
+        saveFileDialog.SetFilename(f"{openFileDialog.GetFilename()[:-3]} Encoded.txt")
+        saveFileDialog.ShowModal()
+        self.write_to_file(saveFileDialog.GetPath())
+        saveFileDialog.Destroy()
+        Window.raise_window()
+    def write_to_file(self, filename):
+        try:
+            with open(filename, 'w') as f:
+                f.write(self.out.text)
+                f.close()
         except:
             pass
 
@@ -540,9 +599,14 @@ manager.current = "menu"
 class Data_Encoder(App):
     def build(self):
         self.title = "Data Encoder"
+        frame.SetSize(0, 0, 200, 50)
         return manager
 
-        
+
+
+
+
+
 
 
 
