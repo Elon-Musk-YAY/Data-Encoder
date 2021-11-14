@@ -132,7 +132,7 @@ def _recipes_pil_prescript(plugins):
     Image.init = init
 
 
-_recipes_pil_prescript(['FtexImagePlugin', 'DdsImagePlugin', 'ImtImagePlugin', 'PcxImagePlugin', 'GbrImagePlugin', 'BmpImagePlugin', 'IcoImagePlugin', 'BufrStubImagePlugin', 'PngImagePlugin', 'TiffImagePlugin', 'XbmImagePlugin', 'WmfImagePlugin', 'IcnsImagePlugin', 'FitsStubImagePlugin', 'PsdImagePlugin', 'SunImagePlugin', 'PixarImagePlugin', 'GifImagePlugin', 'MicImagePlugin', 'PalmImagePlugin', 'BlpImagePlugin', 'JpegImagePlugin', 'FpxImagePlugin', 'XVThumbImagePlugin', 'IptcImagePlugin', 'XpmImagePlugin', 'Jpeg2KImagePlugin', 'DcxImagePlugin', 'CurImagePlugin', 'GribStubImagePlugin', 'SgiImagePlugin', 'PdfImagePlugin', 'FliImagePlugin', 'McIdasImagePlugin', 'MpoImagePlugin', 'PpmImagePlugin', 'MspImagePlugin', 'Hdf5StubImagePlugin', 'ImImagePlugin', 'WebPImagePlugin', 'TgaImagePlugin', 'SpiderImagePlugin', 'PcdImagePlugin', 'EpsImagePlugin', 'MpegImagePlugin'])
+_recipes_pil_prescript(['ImImagePlugin', 'McIdasImagePlugin', 'MpoImagePlugin', 'Hdf5StubImagePlugin', 'XpmImagePlugin', 'PcdImagePlugin', 'GribStubImagePlugin', 'TgaImagePlugin', 'BufrStubImagePlugin', 'MpegImagePlugin', 'TiffImagePlugin', 'MspImagePlugin', 'FtexImagePlugin', 'DdsImagePlugin', 'IcoImagePlugin', 'WmfImagePlugin', 'BlpImagePlugin', 'PsdImagePlugin', 'XbmImagePlugin', 'WebPImagePlugin', 'ImtImagePlugin', 'CurImagePlugin', 'PpmImagePlugin', 'PcxImagePlugin', 'SunImagePlugin', 'JpegImagePlugin', 'SpiderImagePlugin', 'PdfImagePlugin', 'DcxImagePlugin', 'MicImagePlugin', 'FpxImagePlugin', 'PalmImagePlugin', 'FliImagePlugin', 'PngImagePlugin', 'XVThumbImagePlugin', 'BmpImagePlugin', 'GbrImagePlugin', 'Jpeg2KImagePlugin', 'IptcImagePlugin', 'GifImagePlugin', 'IcnsImagePlugin', 'PixarImagePlugin', 'FitsStubImagePlugin', 'SgiImagePlugin', 'EpsImagePlugin'])
 
 
 def _setup_ctypes():
@@ -176,6 +176,6 @@ def _setup_openssl():
 _setup_openssl()
 
 
-DEFAULT_SCRIPT='Data Encoder.py'
+DEFAULT_SCRIPT='runner.py'
 SCRIPT_MAP={}
 _run()
