@@ -11,7 +11,7 @@
 	<key>CFBundleIconFile</key>
 	<string>app_icon.icns</string>
 	<key>CFBundleIdentifier</key>
-	<string>org.pythonmac.unspecified.DataEncoder</string>
+	<string>com.akshardesai.DataEncoder</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
