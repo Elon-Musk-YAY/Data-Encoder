@@ -1,0 +1,362 @@
+#: kivy 2.0.0
+#: import Window kivy.core.window.Window
+#: import Clock kivy.clock.Clock
+#:import Factory kivy.factory.Factory
+#: import wx wx
+#: import base64 base64
+#: import json json
+#: import Snackbar kivymd.uix.snackbar.Snackbar
+#: import MDTextField kivymd.uix.textfield.MDTextField
+
+<menu1>:
+    id: layout
+    AppMenu:
+        canvas.before:
+            Color:
+                rgba: (219/255, 10/255, 91/255, 1)
+            Rectangle:
+                size: self.size
+                pos: self.pos
+        cancel_handler_widget: layout
+        id: app_menu
+        top: Window.height
+        height: dp(30)
+
+        AppMenuTextItem:
+            id: m1
+            background_normal: ""
+            background_down: ""
+            background_color: (120/255, 29/255, 74/255, 0.8) if self.state == 'down' else (219/255, 10/255, 91/255, 1)
+            background_disabled_normal: ""
+            background_disabled_down: ""
+            border: (1, 0, 0, 1)
+            text: "All Encoding Schemes"
+            color: (11/255, 214/255, 139/255, 1)
+
+            ContextMenu:
+                hl_color: (0, 1, 0, 1)
+                ContextMenuTextItem:
+                    text: "Base64"
+                    ContextMenu:
+                        hl_color : (1,0,0,1)
+                        ContextMenuTextItem:
+                            color : (0,0,1,1)
+                            background_color: (1, 0, 0, 1)
+                            text: "Encode"
+                            on_press : app.go_to("encb64")
+                        ContextMenuTextItem:
+                            color : (0,0,1,1)
+                            text: "Decode"
+                            on_press : app.go_to("decb64")
+                ContextMenuTextItem:
+                    text: "Binary"
+                    ContextMenu:
+                        hl_color: (1, 0, 0, 1)
+                        ContextMenuTextItem:
+                            color : (0,0,1,1)
+                            text: "Encode"
+                            on_press : app.go_to("encbin")
+                        ContextMenuTextItem:
+                            color : (0,0,1,1)
+                            text: "Decode"
+                            on_press : app.go_to("decbin")
+                ContextMenuTextItem:
+                    text: "Rot13"
+                    ContextMenu:
+                        hl_color: (1, 0, 0, 1)
+                        ContextMenuTextItem:
+                            color : (0,0,1,1)
+                            text: "Encode"
+                            on_press : app.go_to("encrot13")
+                        ContextMenuTextItem:
+                            color : (0,0,1,1)
+                            text: "Decode"
+                            on_press : app.go_to("decrot13")
+                ContextMenuTextItem:
+                    text: "Hex"
+                    ContextMenu:
+                        hl_color: (1, 0, 0, 1)
+                        ContextMenuTextItem:
+                            color : (0,0,1,1)
+                            text: "Encode"
+                            on_press : app.go_to("enchex")
+                        ContextMenuTextItem:
+                            color : (0,0,1,1)
+                            text: "Decode"
+                            on_press : app.go_to("dechex")
+
+
+
+        AppMenuTextItem:
+            id: m3
+            background_normal: ""
+            background_down: ""
+            background_color: (120/255, 29/255, 74/255, 0.8) if self.state == 'down' else (219/255, 10/255, 91/255, 1)
+            background_disabled_normal: ""
+            background_disabled_down: ""
+            border: (1, 0, 0, 0)
+            text: "Settings"
+            color: (11/255, 214/255, 139/255, 1)
+            ContextMenu:
+                hl_color: (0, 1, 0,1)
+                ContextMenuTextItem:
+                    text: "Screen Transition Time"
+                    on_press:
+                        Factory.transTime().open()
+                        app_menu.close_all()
+
+        AppMenuTextItem:
+            id: m4
+            background_normal: ""
+            background_down: ""
+            background_color: (120/255, 29/255, 74/255, 0.8) if self.state == 'down' else (219/255, 10/255, 91/255, 1)
+            background_disabled_normal: ""
+            background_disabled_down: ""
+            border: (1, 0, 0, 0)
+            text: "Account"
+            color: (11/255, 214/255, 139/255, 1)
+            ContextMenu:
+                hl_color: (0, 1, 0,1)
+                ContextMenuTextItem:
+                    text: "Account Settings"
+                    on_press:
+                        app_menu.close_all()
+                        app.log()
+                ContextMenuTextItem:
+                    text: "View Stats"
+                    on_press:
+                        Factory.Stats().open()
+                        app_menu.close_all()
+                ContextMenuTextItem:
+                    text: "Change Avatar"
+                    on_press:
+                        app.go_to("avatars")
+                        app_menu.close_all()
+                ContextMenuTextItem:
+                    text: "Logout"
+                    id: logout
+                    on_press:
+                        app.logout()
+                        app_menu.close_all()
+
+
+
+        AppMenuTextItem:
+            id : m5
+            background_normal: ""
+            background_down: ""
+            background_color: (120/255, 29/255, 74/255, 0.8) if self.state == 'down' else (219/255, 10/255, 91/255, 1)
+            background_disabled_normal: ""
+            background_disabled_down: ""
+            border: (0, 0, 0, 0)
+            text: "Options"
+            color: (11/255, 214/255, 139/255, 1)
+
+            ContextMenu:
+                hl_color: (0,1,0,1)
+                ContextMenuTextItem:
+                    text: "Encode Clipboard"
+                    disabled: False
+                    on_press: app.enc_clip()
+                    id: enc_btn
+                ContextMenuTextItem:
+                    text: "Decode Clipboard"
+                    disabled: False
+                    on_press: app.enc_clip()
+                    id: dec_btn
+                ContextMenuTextItem:
+                    id: go_other
+                    text: "Go To Other Method in This Encoding Scheme"
+                    disabled: False
+                    on_press: app.go_to_other()
+                ContextMenuTextItem:
+                    text: "Back To Main Menu"
+                    on_press: app.back_to_main()
+                    id: back_to_main
+                ContextMenuTextItem:
+                    id: close
+                    text: "Exit App"
+                    on_press:
+                        Clock.schedule_once(lambda x: app.stop(), 2)
+                        self.text = "The App Is Closing..."
+                        self.disabled = True
+                        back_to_main.disabled = True
+                        go_other.disabled = True
+                        dec_btn.disabled = True
+                        enc_btn.disabled = True
+
+        AppMenuTextItem:
+            id: m6
+            background_normal: ""
+            background_down: ""
+            background_color: (120/255, 29/255, 74/255, 0.8) if self.state == 'down' else (219/255, 10/255, 91/255, 1)
+            background_disabled_normal: ""
+            background_disabled_down: ""
+            border: (1, 0, 0, 0)
+            text: "Help"
+            color: (11/255, 214/255, 139/255, 1)
+            ContextMenu:
+                hl_color : (0, 1, 0,1)
+                ContextMenuTextItem:
+                    text: "Report A Bug On Github"
+                    on_press:
+                        import webbrowser
+                        import logging
+                        webbrowser.open("https://github.com/Elon-Musk-YAY/Data-Encoder-MacOS/issues/new")
+                        app_menu.close_all()
+                ContextMenuTextItem:
+                    text: "Credits And Copyright"
+                    on_press: app.go_to("credits", "right"); app_menu.close_all()
+                ContextMenuTextItem:
+                    id: what_new
+                    text: "What's New in Data Encoder?"
+                    on_press:
+                        Factory.Pop().open()
+                        app_menu.close_all()
+
+
+
+
+
+
+
+
+
+<Pop>:
+    id: popup
+    auto_dismiss: True
+    title: "What's New in Data Encoder 2021.1.11?"
+    size_hint: (None, None)
+    size: (Window.width-125, Window.height-125)
+    separator_color: (0, 1, 0, 1)
+    content: lay
+
+    GridLayout:
+        id: lay
+        cols: 1
+        Label:
+            text: "A new menu bar at the top!"
+        Label:
+            text: "Credits And Copyright"
+        Label:
+            text: "More Encoding And Decoding Types!"
+        Label:
+            text: "App is More Efficient with Certain Tasks"
+        Label:
+            text: "Stats!"
+        Label:
+            text: "Accounts"
+        Label:
+            text: "Avatars"
+        Button:
+            text: "Close"
+            on_press: popup.dismiss()
+            background_color: (1,0,0,1)
+
+
+
+
+<Stats>:
+    id: Stats
+    auto_dismiss: True
+    title: "Your Stats"
+    size_hint: (None, None)
+    size: (Window.width - 900, 900)
+    separator_color: (0, 0, 1, 1)
+    content: stat_shower
+
+
+
+
+
+    GridLayout:
+        id: stat_shower
+        cols: 1
+        GridLayout:
+            cols: 2
+            Label:
+                text: "Total Times You Have Encoded Data:"
+            Label:
+                text: f'{"{:,}".format(int(app.stats["enc_times"]))}' if int(app.stats["enc_times"]) < 1000000000 else f'{float(app.stats["enc_times"])}'
+            Label:
+                text: "Total Times You Have Decoded Data:"
+            Label:
+                text: f'{"{:,}".format(int(app.stats["dec_times"]))}' if int(app.stats["dec_times"]) < 1000000000 else f'{float(app.stats["dec_times"])}'
+            Label:
+                text: "Total Times You Have Encoded Or Decoded Data:"
+            Label:
+                text: f'{"{:,}".format(int(app.stats["total_times"]))}' if int(app.stats["total_times"]) < 1000000000 else f'{float(app.stats["total_times"])}'
+        Button:
+            text: "Close"
+            on_press: Stats.dismiss()
+            background_color: (1, 0,0,1)
+
+
+
+
+
+
+
+
+
+
+<transTime>:
+    id: trans
+    auto_dismiss: True
+    title: "Set Screen Transition Time"
+    color: (1,0,0,1)
+    size_hint: (None, None)
+    size: (Window.width - 300, 900)
+    separator_color: (1, 0, 0, 1)
+    content: yes
+
+
+    GridLayout:
+        id: yes
+        cols: 1
+        Label:
+            id: lab
+            text: "Please enter the new screen transition time. (MUST BE BETWEEN 0.1 AND 10)"
+            color: (1,0,0,1)
+        Label:
+            text: root.che()
+            color: (0,1,0,1)
+        MDTextField:
+            id: inp
+            current_hint_text_color: (0, 1,0 ,1)
+            hint_text: "Enter the value here and press enter when you are done!"
+            multiline: False
+            line_color_normal: (1,1,0,1)
+            line_color_focus: (1,0,1,1)
+            helper_text_mode: "on_focus"
+            helper_text: "The text you enter should just be a number."
+            on_text_validate:
+                root.check_text(self, lab)
+        Button:
+            text: "Close"
+            on_press:
+                root.dismiss()
+            background_color: (1, 0,0,1)
+
+<changeAvatarScreen>:
+    GridLayout:
+        cols: 1
+        Label:
+            text: "Click on an avatar to select it. NOTE: If you don't log in, your current preferences and stats will not be saved!"
+        ScrollView:
+            GridLayout:
+                cols: 3
+                id: avatar_grid
+                size_hint_y: None
+                height: self.minimum_height
+                row_default_height: "100dp"
+                row_force_default: True
+                spacing: 40, 40
+                padding: 40, 40
+        Button:
+            text: "Back"
+            background_color: (1,0,0,1)
+            on_press: app.go_to("menu","right")
+
+
+
